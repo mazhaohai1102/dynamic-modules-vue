@@ -8,7 +8,7 @@
 -->
 # dynamic-modules-vue
 
-> A Vue.js project
+> Vue动态模块加载方案，实现模块跨产品、跨项目复用
 
 ## Build Setup
 
