@@ -4,7 +4,7 @@
  * @Autor: martin
  * @Date: 2021-12-01 10:38:46
  * @LastEditors: martin
- * @LastEditTime: 2021-12-17 10:44:26
+ * @LastEditTime: 2021-12-20 14:40:00
  */
 
 
@@ -164,17 +164,16 @@ const asyncModuleFactoryForPub = (routerPath, moduleName) => {
 /**
  * route beforEach 全局路由加载判断，登录验证判断等。
  */
-router.beforeEach((to, from, next) => {
-  const pathArr = to.fullPath.split('/');
-  // const asyncModuleFactory = process.env.NODE_ENV === 'development' ? asyncModuleFactoryForDev : asyncModuleFactoryForPub;
-  // 非静态路由，且为二级子路由，直接刷新需要在路由开始前重新注册
-  if (!isStaticRoute(pathArr[1]) && pathArr.length > 2) {
+ router.beforeEach((to, from, next) => {
+  // 全局路由信息判断，如果不存在则进行动态注册
+  if(to.matched.length === 0){
+    const pathArr = to.fullPath.split('/');
     asyncModuleFactory('/' + pathArr[1], pathArr[1]).then(() => {
       next();
     }).catch((e) => {
       next();
     });
-  } else {
+  }else{
     next();
   }
 });
