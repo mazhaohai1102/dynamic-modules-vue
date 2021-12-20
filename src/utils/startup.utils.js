@@ -4,7 +4,7 @@
  * @Autor: martin
  * @Date: 2021-12-01 10:38:46
  * @LastEditors: martin
- * @LastEditTime: 2021-12-20 14:40:00
+ * @LastEditTime: 2021-12-20 14:51:58
  */
 
 
@@ -143,17 +143,19 @@ const asyncModuleFactoryForPub = (routerPath, moduleName) => {
   const modulePath = `/${moduleName}-${systemSource}/` + `${moduleName}AsyncModule.js`;
   // 加载异步组件
   let asyncModule = null;
-  // 如果异步模块已经加载，不进行重复加载
-  if (window[`${moduleName}AsyncModule`]) {
+  // 通过window全局挂载获得模块信息
+  const modulePromise = () => {
     asyncModule = window[`${moduleName}AsyncModule`].default;
     registerModule(asyncModule, routerPath, moduleName);
     return Promise.resolve(asyncModule.module);
+  } 
+  // 如果异步模块已经加载，不进行重复加载
+  if (window[`${moduleName}AsyncModule`]) {
+    return modulePromise();
   } else {
     const loadScriptPromise = loadScript(modulePath);
     return loadScriptPromise.then(() => {
-      asyncModule = window[`${moduleName}AsyncModule`].default;
-      registerModule(asyncModule, routerPath, moduleName);
-      return Promise.resolve(asyncModule.module);
+      return modulePromise();
     }).catch((error) => {
       alert(`模块${modulePath}加载失败，请检查是否正确部署此模块！`);
       return Promise.reject();
